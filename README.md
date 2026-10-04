@@ -1,0 +1,1 @@
+# Base del proyecto: Aplicación de cine.

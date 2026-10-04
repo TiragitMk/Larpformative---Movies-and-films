@@ -1,0 +1,97 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Empaquetado / distribución
+build/
+dist/
+*.egg-info/
+.eggs/
+wheels/
+pip-wheel-metadata/
+*.egg
+MANIFEST
+
+# Entornos virtuales
+venv/
+.venv/
+env/
+ENV/
+.python-version
+
+# Variables de entorno
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
+
+# Tests y cobertura
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+.tox/
+.nox/
+.hypothesis/
+
+# Linters y type checkers
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.pytype/
+.dmypy.json
+
+# JavaScript / Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+.yarn/
+.parcel-cache/
+.vite/
+.cache/
+.eslintcache
+
+# Frontend compilado (descomentar si se genera en esta carpeta)
+# static/dist/
+# frontend/dist/
+
+# Bases de datos locales (SQL)
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+# Volcados y backups (pueden contener datos reales)
+*.dump
+*.bak
+backups/
+# Los scripts .sql y las migraciones (alembic/, migrations/) SÍ se versionan
+
+
+# Logs y temporales
+*.log
+logs/
+*.tmp
+*.pid
+uploads/
+
+# Editores e IDEs
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
