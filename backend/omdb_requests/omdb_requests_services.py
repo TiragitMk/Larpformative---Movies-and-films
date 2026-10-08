@@ -23,7 +23,7 @@ def parse_params(title:str="", year:int="", id:str="")->str:
     elif id:
         id = "i=" + id
 
-    return title + year + id
+    return title + year + id + "&type=movie"
 
 def is_in_api(title:str="", year:int="", id:str="")->bool:
     """
