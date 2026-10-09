@@ -46,7 +46,7 @@ def get_connection():
     ejecuta la conexión con foreign keys (que no están por defecto funcionales en sqlite),
     y hace un try. Si la query da error, se deshace, y pase lo que pase se cierra la conexión.
     
-    Esto permite reducir cada query del modelo a básicamente una línea de código, en lugar
+    Esto permite reducir cada query del modelo a básicamente dos línea de código, en lugar
     de repetir todo esto. DRY.
     """
     con = sqlite3.connect(DB_PATH)
