@@ -1,4 +1,4 @@
-from backend.db_model.database import get_connection
+from backend.database import get_connection
 
 def create_user(username, password_hash):
     """
