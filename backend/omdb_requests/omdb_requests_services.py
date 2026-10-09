@@ -1,9 +1,5 @@
-from dotenv import load_dotenv
-import os
+from backend.config import API_URL
 import requests as r
-
-load_dotenv()
-API_URL = os.getenv("API_URL")
 
 if not API_URL:
     raise RuntimeError("API key or url not found. Please see 'README.md' and try again.")
