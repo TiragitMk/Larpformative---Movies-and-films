@@ -30,7 +30,7 @@ def get_all_films_by_rating_head(orden="DESC", limit=10, page=1):
             ORDER BY PROMEDIO {orden} NULLS LAST, P.NOMBRE ASC
             LIMIT ? OFFSET ?
         """, (limit, page * limit))
-        return cur.fetchall()
+        return [dict(i) for i in cur.fetchall()]
 
 def get_all_films_by_year_head(orden="DESC", limit=10, page=1):
     """
@@ -49,4 +49,4 @@ def get_all_films_by_year_head(orden="DESC", limit=10, page=1):
             ORDER BY P.ANIO {orden} NULLS LAST, P.NOMBRE ASC
             LIMIT ? OFFSET ?
         """, (limit, page * limit))
-        return cur.fetchall()
+        return [dict(i) for i in cur.fetchall()]

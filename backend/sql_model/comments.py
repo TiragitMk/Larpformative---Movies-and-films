@@ -38,7 +38,7 @@ def get_all_my_comments(id_persona):
             WHERE C.ID_PERSONA = ?
             ORDER BY C.FECHA_CREACION DESC
         """, (id_persona,))
-        return cur.fetchall()
+        return [dict(i) for i in cur.fetchall()]
 
 def get_my_comment_count(id_persona):
     """
@@ -60,7 +60,7 @@ def get_all_my_comments_film(id_persona, id_pelicula):
             WHERE ID_PERSONA = ? AND ID_PELICULA = ?
             ORDER BY FECHA_CREACION DESC
         """, (id_persona, id_pelicula))
-        return cur.fetchall()
+        return [dict(i) for i in cur.fetchall()]
 
 def get_all_comments_film(id_pelicula):
     """

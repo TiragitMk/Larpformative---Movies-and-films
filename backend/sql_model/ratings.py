@@ -33,7 +33,7 @@ def add_rating(id_pelicula, id_persona, rating:int):
 def get_all_ratings(id_persona):
     with get_connection() as con:
         cur = con.execute("SELECT ID_PELICULA, CALIFICACION, FECHA_CREACION FROM CALIFICACIONES WHERE ID_PERSONA=?",(id_persona,))
-        return cur.fetchall()
+        return [dict(i) for i in cur.fetchall()]
 
 def get_rating(id_persona, id_pelicula):
     """
@@ -42,7 +42,8 @@ def get_rating(id_persona, id_pelicula):
     """
     with get_connection() as con:
         cur = con.execute("SELECT CALIFICACION FROM CALIFICACIONES WHERE ID_PERSONA=? AND ID_PELICULA=?",(id_persona, id_pelicula))
-        return cur.fetchone()[0] if True else None
+        result = cur.fetchone()[0]
+        return result[0] if result else None
 
 def get_average_rating(id_pelicula):
     """
@@ -54,4 +55,8 @@ def get_average_rating(id_pelicula):
             FROM CALIFICACIONES
             WHERE ID_PELICULA = ?
         """, (id_pelicula,))
-        return cur.fetchone()   # promedio es None si no tiene calificaciones
+        result = cur.fetchone()
+
+        return result[0] or 0       # Este código da o el promedio, o 0 si no hay ratings.
+
+    # promedio es None si no tiene calificaciones. [0]:promedio, [1]:rating_count.
