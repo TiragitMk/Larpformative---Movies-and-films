@@ -1,3 +1,9 @@
+"""
+Todo esto son comandos relacionados con los comentarios, incluyendo queries relacionadas
+con un usuario en específico, película en específico, etc.
+Hay funcionalidades para añadir comentarios, obtener información, eliminarlos...
+"""
+
 from backend.database import get_connection
 from backend.omdb_requests.omdb_requests_services import get_movie_api_data
 from backend.sql_model.films import is_film_in_db
@@ -21,6 +27,7 @@ def add_comment(id_pelicula, id_persona, comentario:str):
 
 def get_all_my_comments(id_persona):
     """
+    Devuelve TODOS los comentarios de un usuario.
     OJO: Devuelve TODOS los resultados. Más abajo hay uno igual, pero que devuelve los primeros 10.
     """
     with get_connection() as con:
@@ -34,12 +41,16 @@ def get_all_my_comments(id_persona):
         return cur.fetchall()
 
 def get_my_comment_count(id_persona):
+    """
+    Muestra sólo el número de comentarios (comment count) que tiene un usuario.
+    """
     with get_connection() as con:
         cur = con.execute("SELECT COUNT(*) FROM COMENTARIOS WHERE ID_PERSONA = ?", (id_persona,))
         return cur.fetchone()[0]
 
 def get_all_my_comments_film(id_persona, id_pelicula):
     """
+    Muestra TODOS los comentarios de una persona en una película.
     OJO: Devuelve TODOS los resultados. Más abajo hay uno igual, pero que devuelve los primeros 10.
     """
     with get_connection() as con:
@@ -53,6 +64,7 @@ def get_all_my_comments_film(id_persona, id_pelicula):
 
 def get_all_comments_film(id_pelicula):
     """
+    Muestra TODOS los comentarios de una película.
     OJO: Devuelve TODOS los resultados. Más abajo hay uno igual, pero que devuelve los primeros 10.
     """
     with get_connection() as con:
@@ -65,21 +77,35 @@ def get_film_comment_count(id_pelicula):
         return cur.fetchone()[0]
 
 def get_comment(id_comentario):
+    """
+    Muestra los datos de un comentario específico.
+    """
     with get_connection() as con:
         cur = con.execute("SELECT * FROM COMENTARIOS WHERE ID_COMENTARIO = ?", (id_comentario,))
         return cur.fetchone()   # None si no existe
 
 def edit_comment(id_comentario, nuevo_texto):
+    """
+    Permite editar un comentario, pero sólo el texto.
+    """
     with get_connection() as con:
         con.execute("UPDATE COMENTARIOS SET COMENTARIO = ? WHERE ID_COMENTARIO = ?", (nuevo_texto, id_comentario))
 
 def del_comment(id_comentario):
+    """
+    Permite borrar un comentario con su id.
+    """
     with get_connection() as con:
         con.execute("DELETE FROM COMENTARIOS WHERE ID_COMENTARIO = ?", (id_comentario,))
 
-# CONSULTAN SOLO UN HEAD ORDENADO (default 10 comentarios, página 1):
+# CONSULTAN SOLO UN HEAD ORDENADO (parámetros default 10 comentarios, página 1):
 
 def get_all_my_comments_head(id_persona, limit=10, page=1):
+    """
+    Muestra una lista de los primeros limit comentarios de una persona.
+    Usa page para paginar la lista.
+    Los ordena por fecha de creación o en su defecto ID_COMENTARIO.
+    """
     with get_connection() as con:
         cur = con.execute("""
         SELECT * FROM COMENTARIOS
@@ -90,6 +116,11 @@ def get_all_my_comments_head(id_persona, limit=10, page=1):
         return cur.fetchall()
 
 def get_all_my_comments_film_head(id_persona, id_pelicula, limit=10, page=1):
+    """
+    Muestra una lista de los primeros limit comentarios de un usuario en una película específica,
+    usando page para paginar y la combinación id_persona-id_pelicula para indexar los comentarios.
+    Los ordena por fecha de creación o ID_COMENTARIO.
+    """
     with get_connection() as con:
         cur = con.execute("""
         SELECT * FROM COMENTARIOS
@@ -100,6 +131,10 @@ def get_all_my_comments_film_head(id_persona, id_pelicula, limit=10, page=1):
         return cur.fetchall()
 
 def get_all_comments_film(id_pelicula, limit=10, page=1):
+    """
+    Muestra una lista de los primeros limit comentarios de una película, entre todos los usuarios
+    que la han comentado. Usa page para paginar y ordena por fecha de creación o ID_comentario.
+    """
     with get_connection() as con:
         cur = con.execute("""
         SELECT * FROM COMENTARIOS

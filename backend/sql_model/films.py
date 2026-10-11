@@ -15,6 +15,7 @@ def is_film_in_db(id_pelicula):
 
 def get_all_films_by_rating_head(orden="DESC", limit=10, page=1):
     """
+    Muestra un head de todas las películas, ordenadas por rating.
     Parámetro orden="DESC" -> Mayor a menor rating
     Parámetro orden="ASC" -> Menor a mayor rating
     """
@@ -33,6 +34,7 @@ def get_all_films_by_rating_head(orden="DESC", limit=10, page=1):
 
 def get_all_films_by_year_head(orden="DESC", limit=10, page=1):
     """
+    Muestra un head de todas las películas, ordenadas por año de salida.
     Parámetro orden="DESC" -> Más nueva a más antigua
     Parámetro orden="ASC" -> Más antigua a más nueva
     """

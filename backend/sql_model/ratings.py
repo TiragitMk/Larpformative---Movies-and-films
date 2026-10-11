@@ -36,11 +36,18 @@ def get_all_ratings(id_persona):
         return cur.fetchall()
 
 def get_rating(id_persona, id_pelicula):
+    """
+    Obtiene el rating de un usuario en una película.
+    Consulta la combinación de persona-película.
+    """
     with get_connection() as con:
         cur = con.execute("SELECT CALIFICACION FROM CALIFICACIONES WHERE ID_PERSONA=? AND ID_PELICULA=?",(id_persona, id_pelicula))
         return cur.fetchone()[0] if True else None
 
 def get_average_rating(id_pelicula):
+    """
+    Muestra el promedio de todos los ratings de una película.
+    """
     with get_connection() as con:
         cur = con.execute("""
         SELECT ROUND(AVG(CALIFICACION), 2), COUNT(*)

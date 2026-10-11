@@ -64,6 +64,7 @@ def get_connection():
 def init_database():
     """
     Crea la base de datos con el esquema especificado en la constante de arriba.
+    Se ejecuta si database.py se ejecuta como módulo __main__.
     """
     with get_connection() as con:
         con.executescript(DB_SCHEMA)
