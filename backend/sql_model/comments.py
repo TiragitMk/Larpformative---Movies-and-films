@@ -69,7 +69,7 @@ def get_all_comments_film(id_pelicula):
     """
     with get_connection() as con:
         cur = con.execute("SELECT * FROM COMENTARIOS WHERE ID_PELICULA = ? ORDER BY FECHA_CREACION DESC", (id_pelicula,))
-        return cur.fetchall()
+        return [dict(i) for i in cur.fetchall()]
 
 def get_film_comment_count(id_pelicula):
     with get_connection() as con:
@@ -82,7 +82,7 @@ def get_comment(id_comentario):
     """
     with get_connection() as con:
         cur = con.execute("SELECT * FROM COMENTARIOS WHERE ID_COMENTARIO = ?", (id_comentario,))
-        return cur.fetchone()   # None si no existe
+        return dict(cur.fetchone())   # None si no existe
 
 def edit_comment(id_comentario, nuevo_texto):
     """
@@ -98,7 +98,8 @@ def del_comment(id_comentario):
     with get_connection() as con:
         con.execute("DELETE FROM COMENTARIOS WHERE ID_COMENTARIO = ?", (id_comentario,))
 
-# CONSULTAN SOLO UN HEAD ORDENADO (parámetros default 10 comentarios, página 1):
+# CONSULTAN SOLO UN HEAD ORDENADO (parámetros default 10 comentarios, página 1)->
+# * Probablemente haciendo fetchmany() bastaría, pero da el mismo resultado:
 
 def get_all_my_comments_head(id_persona, limit=10, page=1):
     """
@@ -113,7 +114,7 @@ def get_all_my_comments_head(id_persona, limit=10, page=1):
             ORDER BY FECHA_CREACION DESC, ID_COMENTARIO DESC
             LIMIT ? OFFSET ?
         """, (id_persona, limit, page * limit))
-        return cur.fetchall()
+        return [dict(i) for i in cur.fetchall()]
 
 def get_all_my_comments_film_head(id_persona, id_pelicula, limit=10, page=1):
     """
@@ -128,7 +129,7 @@ def get_all_my_comments_film_head(id_persona, id_pelicula, limit=10, page=1):
             ORDER BY FECHA_CREACION DESC, ID_COMENTARIO DESC
             LIMIT ? OFFSET ?
         """, (id_persona, id_pelicula, limit, page * limit))
-        return cur.fetchall()
+        return [dict(i) for i in cur.fetchall()]
 
 def get_all_comments_film(id_pelicula, limit=10, page=1):
     """
@@ -142,4 +143,4 @@ def get_all_comments_film(id_pelicula, limit=10, page=1):
             ORDER BY FECHA_CREACION DESC, ID_COMENTARIO DESC
             LIMIT ? OFFSET ?
         """, (id_pelicula, limit, page * limit))
-        return cur.fetchall()
+        return [dict(i) for i in cur.fetchall()]
