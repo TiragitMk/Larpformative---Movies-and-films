@@ -113,7 +113,7 @@ def get_all_my_comments_head(id_persona, limit=10, page=1):
             WHERE ID_PERSONA = ?
             ORDER BY FECHA_CREACION DESC, ID_COMENTARIO DESC
             LIMIT ? OFFSET ?
-        """, (id_persona, limit, page * limit))
+        """, (id_persona, limit, (page-1) * limit))
         return [dict(i) for i in cur.fetchall()]
 
 def get_all_my_comments_film_head(id_persona, id_pelicula, limit=10, page=1):
@@ -128,7 +128,7 @@ def get_all_my_comments_film_head(id_persona, id_pelicula, limit=10, page=1):
             WHERE ID_PERSONA = ? AND ID_PELICULA = ?
             ORDER BY FECHA_CREACION DESC, ID_COMENTARIO DESC
             LIMIT ? OFFSET ?
-        """, (id_persona, id_pelicula, limit, page * limit))
+        """, (id_persona, id_pelicula, limit, (page-1) * limit))
         return [dict(i) for i in cur.fetchall()]
 
 def get_all_comments_film(id_pelicula, limit=10, page=1):
@@ -142,5 +142,5 @@ def get_all_comments_film(id_pelicula, limit=10, page=1):
             WHERE ID_PELICULA = ?
             ORDER BY FECHA_CREACION DESC, ID_COMENTARIO DESC
             LIMIT ? OFFSET ?
-        """, (id_pelicula, limit, page * limit))
+        """, (id_pelicula, limit, (page-1) * limit))
         return [dict(i) for i in cur.fetchall()]
