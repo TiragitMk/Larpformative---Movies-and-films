@@ -20,4 +20,15 @@ def get_by_username(nombre_usuario):
         row = cur.fetchone()
         return dict(row) if row else None
 
+
+def get_public_by_id(id_persona):
+    """
+    Obtiene los datos públicos de un usuario (id, nombre; sin password_hash) por su ID_PERSONA.
+    Devuelve None si no existe. La usa GET /users/me.
+    """
+    with get_connection() as con:
+        cur = con.execute("SELECT ID_PERSONA, NOMBRE_USUARIO FROM PERSONAS WHERE ID_PERSONA = ?", (id_persona,))
+        row = cur.fetchone()
+        return dict(row) if row else None
+
 # De momento no añadiré funciones para modificar datos de usuarios. Más adelante decidiré si merece la pena la complejidad.
