@@ -17,6 +17,7 @@ def get_by_username(nombre_usuario):
     """
     with get_connection() as con:
         cur = con.execute("SELECT * FROM PERSONAS WHERE NOMBRE_USUARIO = ?;", (nombre_usuario,))
-        return dict(cur.fetchone())
+        row = cur.fetchone()
+        return dict(row) if row else None
 
 # De momento no añadiré funciones para modificar datos de usuarios. Más adelante decidiré si merece la pena la complejidad.

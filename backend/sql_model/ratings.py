@@ -55,8 +55,9 @@ def get_average_rating(id_pelicula):
             FROM CALIFICACIONES
             WHERE ID_PELICULA = ?
         """, (id_pelicula,))
-        result = cur.fetchone()
-
-        return result[0] or 0       # Este código da o el promedio, o 0 si no hay ratings.
+        promedio, total = cur.fetchone()
+        return {"average": promedio or 0, "count": total}
+    
+     # Este código da o el promedio, o 0 si no hay ratings.
 
     # promedio es None si no tiene calificaciones. [0]:promedio, [1]:rating_count.

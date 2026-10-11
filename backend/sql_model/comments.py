@@ -81,8 +81,15 @@ def get_comment(id_comentario):
     Muestra los datos de un comentario específico.
     """
     with get_connection() as con:
-        cur = con.execute("SELECT * FROM COMENTARIOS WHERE ID_COMENTARIO = ?", (id_comentario,))
-        return dict(cur.fetchone())   # None si no existe
+        cur = con.execute("""
+            SELECT C.ID_COMENTARIO, C.ID_PELICULA, C.ID_PERSONA, U.NOMBRE_USUARIO,
+                C.COMENTARIO, C.FECHA_CREACION
+                FROM COMENTARIOS C
+                JOIN PERSONAS U ON U.ID_PERSONA = C.ID_PERSONA
+                WHERE C.ID_COMENTARIO = ?
+            """, (id_comentario,))
+        row = cur.fetchone()
+        return dict(row) if row else None
 
 def edit_comment(id_comentario, nuevo_texto):
     """
@@ -131,16 +138,19 @@ def get_all_my_comments_film_head(id_persona, id_pelicula, limit=10, page=1):
         """, (id_persona, id_pelicula, limit, (page-1) * limit))
         return [dict(i) for i in cur.fetchall()]
 
-def get_all_comments_film(id_pelicula, limit=10, page=1):
+def get_all_comments_film_head(id_pelicula, limit=10, page=1):
     """
     Muestra una lista de los primeros limit comentarios de una película, entre todos los usuarios
     que la han comentado. Usa page para paginar y ordena por fecha de creación o ID_comentario.
     """
     with get_connection() as con:
         cur = con.execute("""
-        SELECT * FROM COMENTARIOS
-            WHERE ID_PELICULA = ?
-            ORDER BY FECHA_CREACION DESC, ID_COMENTARIO DESC
+        SELECT C.ID_COMENTARIO, C.ID_PELICULA, C.ID_PERSONA, U.NOMBRE_USUARIO,
+                C.COMENTARIO, C.FECHA_CREACION
+            FROM COMENTARIOS C
+            JOIN PERSONAS U ON U.ID_PERSONA = C.ID_PERSONA
+            WHERE C.ID_PELICULA = ?
+            ORDER BY C.FECHA_CREACION DESC, C.ID_COMENTARIO DESC
             LIMIT ? OFFSET ?
         """, (id_pelicula, limit, (page-1) * limit))
         return [dict(i) for i in cur.fetchall()]
