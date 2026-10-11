@@ -12,3 +12,39 @@ def is_film_in_db(id_pelicula):
         else:
             result = True
     return result
+
+def get_all_films_by_rating_head(orden="DESC", limit=10, page=1):
+    """
+    Parámetro orden="DESC" -> Mayor a menor rating
+    Parámetro orden="ASC" -> Menor a mayor rating
+    """
+    with get_connection() as con:
+        cur = con.execute(f"""
+        SELECT P.ID_PELICULA, P.NOMBRE, P.ANIO,
+                ROUND(AVG(C.CALIFICACION), 2) AS PROMEDIO,
+                COUNT(C.ID_CALIFICACION) AS NUM_CALIFICACIONES
+            FROM PELICULAS P
+            LEFT JOIN CALIFICACIONES C ON C.ID_PELICULA = P.ID_PELICULA
+            GROUP BY P.ID_PELICULA
+            ORDER BY PROMEDIO {orden} NULLS LAST, P.NOMBRE ASC
+            LIMIT ? OFFSET ?
+        """, (limit, page * limit))
+        return cur.fetchall()
+
+def get_all_films_by_year_head(orden="DESC", limit=10, page=1):
+    """
+    Parámetro orden="DESC" -> Más nueva a más antigua
+    Parámetro orden="ASC" -> Más antigua a más nueva
+    """
+    with get_connection() as con:
+        cur = con.execute(f"""
+        SELECT P.ID_PELICULA, P.NOMBRE, P.ANIO,
+                ROUND(AVG(C.CALIFICACION), 2) AS PROMEDIO,
+                COUNT(C.ID_CALIFICACION) AS NUM_CALIFICACIONES
+            FROM PELICULAS P
+            LEFT JOIN CALIFICACIONES C ON C.ID_PELICULA = P.ID_PELICULA
+            GROUP BY P.ID_PELICULA
+            ORDER BY P.ANIO {orden} NULLS LAST, P.NOMBRE ASC
+            LIMIT ? OFFSET ?
+        """, (limit, page * limit))
+        return cur.fetchall()

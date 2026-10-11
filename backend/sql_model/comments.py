@@ -17,21 +17,94 @@ def add_comment(id_pelicula, id_persona, comentario:str):
     with get_connection() as con:
         cur = con.execute("INSERT INTO COMENTARIOS (ID_PELICULA, ID_PERSONA, COMENTARIO) VALUES (?, ?, ?)",
                           (id_pelicula, id_persona, comentario))
-        return cur.lastrowid    # Esta línea es opcional.
+        return cur.lastrowid    # Esta línea es opcional. Puede servir para disponer el nuevo comentario.
 
 def get_all_my_comments(id_persona):
-    pass
+    """
+    OJO: Devuelve TODOS los resultados. Más abajo hay uno igual, pero que devuelve los primeros 10.
+    """
+    with get_connection() as con:
+        cur = con.execute("""
+        SELECT C.ID_COMENTARIO, C.ID_PELICULA, P.NOMBRE, C.COMENTARIO, C.FECHA_CREACION
+            FROM COMENTARIOS C
+            JOIN PELICULAS P ON P.ID_PELICULA = C.ID_PELICULA
+            WHERE C.ID_PERSONA = ?
+            ORDER BY C.FECHA_CREACION DESC
+        """, (id_persona,))
+        return cur.fetchall()
+
+def get_my_comment_count(id_persona):
+    with get_connection() as con:
+        cur = con.execute("SELECT COUNT(*) FROM COMENTARIOS WHERE ID_PERSONA = ?", (id_persona,))
+        return cur.fetchone()[0]
 
 def get_all_my_comments_film(id_persona, id_pelicula):
-    pass
+    """
+    OJO: Devuelve TODOS los resultados. Más abajo hay uno igual, pero que devuelve los primeros 10.
+    """
+    with get_connection() as con:
+        cur = con.execute("""
+        SELECT ID_COMENTARIO, COMENTARIO, FECHA_CREACION
+            FROM COMENTARIOS
+            WHERE ID_PERSONA = ? AND ID_PELICULA = ?
+            ORDER BY FECHA_CREACION DESC
+        """, (id_persona, id_pelicula))
+        return cur.fetchall()
 
 def get_all_comments_film(id_pelicula):
-    pass
-
-def get_comment(id_comment):
-    pass
-
-def edit_comment(id_comment):
+    """
+    OJO: Devuelve TODOS los resultados. Más abajo hay uno igual, pero que devuelve los primeros 10.
+    """
     with get_connection() as con:
-        con.execute("UPDATE ")
+        cur = con.execute("SELECT * FROM COMENTARIOS WHERE ID_PELICULA = ? ORDER BY FECHA_CREACION DESC", (id_pelicula,))
+        return cur.fetchall()
 
+def get_film_comment_count(id_pelicula):
+    with get_connection() as con:
+        cur = con.execute("SELECT COUNT(*) FROM COMENTARIOS WHERE ID_PELICULA = ?", (id_pelicula,))
+        return cur.fetchone()[0]
+
+def get_comment(id_comentario):
+    with get_connection() as con:
+        cur = con.execute("SELECT * FROM COMENTARIOS WHERE ID_COMENTARIO = ?", (id_comentario,))
+        return cur.fetchone()   # None si no existe
+
+def edit_comment(id_comentario, nuevo_texto):
+    with get_connection() as con:
+        con.execute("UPDATE COMENTARIOS SET COMENTARIO = ? WHERE ID_COMENTARIO = ?", (nuevo_texto, id_comentario))
+
+def del_comment(id_comentario):
+    with get_connection() as con:
+        con.execute("DELETE FROM COMENTARIOS WHERE ID_COMENTARIO = ?", (id_comentario,))
+
+# CONSULTAN SOLO UN HEAD ORDENADO (default 10 comentarios, página 1):
+
+def get_all_my_comments_head(id_persona, limit=10, page=1):
+    with get_connection() as con:
+        cur = con.execute("""
+        SELECT * FROM COMENTARIOS
+            WHERE ID_PERSONA = ?
+            ORDER BY FECHA_CREACION DESC, ID_COMENTARIO DESC
+            LIMIT ? OFFSET ?
+        """, (id_persona, limit, page * limit))
+        return cur.fetchall()
+
+def get_all_my_comments_film_head(id_persona, id_pelicula, limit=10, page=1):
+    with get_connection() as con:
+        cur = con.execute("""
+        SELECT * FROM COMENTARIOS
+            WHERE ID_PERSONA = ? AND ID_PELICULA = ?
+            ORDER BY FECHA_CREACION DESC, ID_COMENTARIO DESC
+            LIMIT ? OFFSET ?
+        """, (id_persona, id_pelicula, limit, page * limit))
+        return cur.fetchall()
+
+def get_all_comments_film(id_pelicula, limit=10, page=1):
+    with get_connection() as con:
+        cur = con.execute("""
+        SELECT * FROM COMENTARIOS
+            WHERE ID_PELICULA = ?
+            ORDER BY FECHA_CREACION DESC, ID_COMENTARIO DESC
+            LIMIT ? OFFSET ?
+        """, (id_pelicula, limit, page * limit))
+        return cur.fetchall()
