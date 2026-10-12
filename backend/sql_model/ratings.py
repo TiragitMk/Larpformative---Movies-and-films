@@ -18,6 +18,8 @@ def add_rating(id_pelicula, id_persona, rating:int):
     """
     if not is_film_in_db(id_pelicula):
         movie_data = get_movie_api_data(id_pelicula)
+        if movie_data is None:
+            return None
         with get_connection() as con:
             con.execute("INSERT OR IGNORE INTO PELICULAS (ID_PELICULA, NOMBRE, ANIO) VALUES (?, ?, ?)",
                         (id_pelicula, movie_data["Title"], movie_data["Year"]))
