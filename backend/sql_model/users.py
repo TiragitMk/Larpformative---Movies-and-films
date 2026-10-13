@@ -25,9 +25,17 @@ def get_public_by_id(id_persona):
     """
     Obtiene los datos públicos de un usuario (id, nombre; sin password_hash) por su ID_PERSONA.
     Devuelve None si no existe. La usa GET /users/me.
+    Añadido: Ahora también selecciona nº coment, nº ratings y rating promedio.
     """
     with get_connection() as con:
-        cur = con.execute("SELECT ID_PERSONA, NOMBRE_USUARIO FROM PERSONAS WHERE ID_PERSONA = ?", (id_persona,))
+        cur = con.execute("""
+        SELECT P.ID_PERSONA, P.NOMBRE_USUARIO,
+                (SELECT COUNT(*) FROM COMENTARIOS WHERE ID_PERSONA = P.ID_PERSONA) AS NUM_COMENTARIOS,
+                (SELECT COUNT(*) FROM CALIFICACIONES WHERE ID_PERSONA = P.ID_PERSONA) AS NUM_CALIFICACIONES,
+                (SELECT ROUND(AVG(CALIFICACION), 2) FROM CALIFICACIONES WHERE ID_PERSONA = P.ID_PERSONA) AS PROMEDIO_CALIFICACIONES
+            FROM PERSONAS P
+            WHERE P.ID_PERSONA = ?
+        """, (id_persona,))
         row = cur.fetchone()
         return dict(row) if row else None
 

@@ -1,13 +1,13 @@
 from typing import Literal
 from fastapi import APIRouter, HTTPException, Path, Query
-from backend.omdb_requests.omdb_requests_services import get_movie_api_data
+from backend.omdb_requests.omdb_requests_services import get_movie_api_data, search_movies_api
 from backend.sql_model import films as films_db
 from backend.sql_model import ratings as ratings_db
 from backend.sql_model import comments as comments_db
  
 router = APIRouter(prefix="/films", tags=["films"])
  
-IMDB_ID_PATTERN = r"^tt\d{7,8}$"
+IMDB_ID_PATTERN = r"^tt\d{7,8}$"        # Patrón del imdb_id, tt seguido de 7-8 números.
  
  
 @router.get("/search")
@@ -32,6 +32,22 @@ def search_film(
     if data is None:
         raise HTTPException(status_code=404, detail="Película no encontrada.")
     return data
+
+@router.get("/search/list")
+def search_film_list(
+    title: str = Query(min_length=1),
+    year: int | None = Query(None, ge=1880, le=2100),
+    page: int = Query(1, ge=1, le=100),
+):
+    """
+    Busca en OMDB todas las películas cuyo título contenga el texto, 10 por página.
+    Es la búsqueda pensada para el buscador de la web.
+    Cada resultado trae imdb_ID, que el frontend usa para tener los detalles después.
+    """
+    result = search_movies_api(title, year or "", page)
+    if result is None:
+        raise HTTPException(status_code=404, detail="No se encontraron películas.")
+    return {"total": result["total"], "page": page, "limit": 10, "items": result["items"]}
  
  
 @router.get("")
@@ -46,8 +62,11 @@ def list_films(
     order se valida con Literal porque en sql_model se inserta con f-string. Así se evita inyección SQL.
     """
     if order_by == "rating":
-        return films_db.get_all_films_by_rating_head(order, limit, page)
-    return films_db.get_all_films_by_year_head(order, limit, page)
+        films = films_db.get_all_films_by_rating_head(order, limit, page)
+    else:
+        films = films_db.get_all_films_by_year_head(order, limit, page)
+
+    return {"total": films_db.get_film_count(), "page": page, "limit": limit, "films": films}
  
  
 @router.get("/{imdb_id}")

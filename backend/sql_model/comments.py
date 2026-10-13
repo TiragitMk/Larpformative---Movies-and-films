@@ -8,6 +8,17 @@ from backend.database import get_connection
 from backend.omdb_requests.omdb_requests_services import get_movie_api_data
 from backend.sql_model.films import is_film_in_db
 
+COLUMNAS_PUBLICAS = """
+    C.ID_COMENTARIO, C.ID_PELICULA, P.NOMBRE AS NOMBRE_PELICULA, P.ANIO,
+    C.ID_PERSONA, U.NOMBRE_USUARIO, C.COMENTARIO, C.FECHA_CREACION
+"""
+
+JOINS_PUBLICOS = """
+    FROM COMENTARIOS C
+    JOIN PERSONAS U ON U.ID_PERSONA = C.ID_PERSONA
+    JOIN PELICULAS P ON P.ID_PELICULA = C.ID_PELICULA
+"""
+
 def add_comment(id_pelicula, id_persona, comentario:str):
     """
     Registra una película si no existe en la base de datos, y crea un comentario para el
@@ -73,6 +84,13 @@ def get_all_comments_film(id_pelicula):
         cur = con.execute("SELECT * FROM COMENTARIOS WHERE ID_PELICULA = ? ORDER BY FECHA_CREACION DESC", (id_pelicula,))
         return [dict(i) for i in cur.fetchall()]
 
+def get_total_comment_count():
+    """
+    Número total de comentarios de la web. Sirve para paginar la lista de últimos comentarios.
+    """
+    with get_connection() as con:
+        return con.execute("SELECT COUNT(*) FROM COMENTARIOS").fetchone()[0]
+
 def get_film_comment_count(id_pelicula):
     with get_connection() as con:
         cur = con.execute("SELECT COUNT(*) FROM COMENTARIOS WHERE ID_PELICULA = ?", (id_pelicula,))
@@ -83,13 +101,7 @@ def get_comment(id_comentario):
     Muestra los datos de un comentario específico.
     """
     with get_connection() as con:
-        cur = con.execute("""
-            SELECT C.ID_COMENTARIO, C.ID_PELICULA, C.ID_PERSONA, U.NOMBRE_USUARIO,
-                C.COMENTARIO, C.FECHA_CREACION
-                FROM COMENTARIOS C
-                JOIN PERSONAS U ON U.ID_PERSONA = C.ID_PERSONA
-                WHERE C.ID_COMENTARIO = ?
-            """, (id_comentario,))
+        cur = con.execute(f"SELECT {COLUMNAS_PUBLICAS} {JOINS_PUBLICOS} WHERE C.ID_COMENTARIO = ?", (id_comentario,))
         row = cur.fetchone()
         return dict(row) if row else None
 
@@ -117,10 +129,10 @@ def get_all_my_comments_head(id_persona, limit=10, page=1):
     Los ordena por fecha de creación o en su defecto ID_COMENTARIO.
     """
     with get_connection() as con:
-        cur = con.execute("""
-        SELECT * FROM COMENTARIOS
-            WHERE ID_PERSONA = ?
-            ORDER BY FECHA_CREACION DESC, ID_COMENTARIO DESC
+        cur = con.execute(f"""
+        SELECT {COLUMNAS_PUBLICAS} {JOINS_PUBLICOS}
+            WHERE C.ID_PERSONA = ?
+            ORDER BY C.FECHA_CREACION DESC, C.ID_COMENTARIO DESC
             LIMIT ? OFFSET ?
         """, (id_persona, limit, (page-1) * limit))
         return [dict(i) for i in cur.fetchall()]
@@ -146,13 +158,22 @@ def get_all_comments_film_head(id_pelicula, limit=10, page=1):
     que la han comentado. Usa page para paginar y ordena por fecha de creación o ID_comentario.
     """
     with get_connection() as con:
-        cur = con.execute("""
-        SELECT C.ID_COMENTARIO, C.ID_PELICULA, C.ID_PERSONA, U.NOMBRE_USUARIO,
-                C.COMENTARIO, C.FECHA_CREACION
-            FROM COMENTARIOS C
-            JOIN PERSONAS U ON U.ID_PERSONA = C.ID_PERSONA
+        cur = con.execute(f"""
+        SELECT {COLUMNAS_PUBLICAS} {JOINS_PUBLICOS}
             WHERE C.ID_PELICULA = ?
             ORDER BY C.FECHA_CREACION DESC, C.ID_COMENTARIO DESC
             LIMIT ? OFFSET ?
         """, (id_pelicula, limit, (page-1) * limit))
+        return [dict(i) for i in cur.fetchall()]
+
+def get_latest_comments_head(limit=10, page=1):
+    """
+    Últimos comentarios de toda la web, con autor y película. Pensado para la portada.
+    """
+    with get_connection() as con:
+        cur = con.execute(f"""
+        SELECT {COLUMNAS_PUBLICAS} {JOINS_PUBLICOS}
+            ORDER BY C.FECHA_CREACION DESC, C.ID_COMENTARIO DESC
+            LIMIT ? OFFSET ?
+        """, (limit, (page - 1) * limit))
         return [dict(i) for i in cur.fetchall()]

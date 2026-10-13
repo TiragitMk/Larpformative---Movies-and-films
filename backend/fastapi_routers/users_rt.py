@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 from pydantic import BaseModel, Field
 from backend import security
 from backend.dependencies import get_current_user, get_token
@@ -59,7 +59,7 @@ def login(data: LoginData):
  
  
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
-def logout(token: str = Depends(get_token)):
+def logout(token: str = Depends(get_token), tags=["protected"]):
     """
     Invalida el token actual. Si el token ya no era válido, no pasa nada.
     El frontend debe borrar además el token de localStorage.
@@ -69,7 +69,7 @@ def logout(token: str = Depends(get_token)):
     security.logout(token)
  
  
-@router.get("/me")
+@router.get("/me", tags=["protected"])
 def me(id_persona: int = Depends(get_current_user)):
     """
     Devuelve los datos públicos del usuario autenticado.
@@ -79,4 +79,16 @@ def me(id_persona: int = Depends(get_current_user)):
     usuario = users_db.get_public_by_id(id_persona)
     if usuario is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario no encontrado.")
+    return usuario
+
+@router.get("/{id_persona}")
+def user_profile(id_persona: int = Path(ge=1)):
+    """
+    Perfil público de cualquier usuario. Muestra nombre, número de comentarios, número de calificaciones
+    y promedio de las calificaciones que ha dado. Las listas se piden aparte y paginadas en
+    GET /users/{id_persona}/comments y GET /users/{id_persona}/ratings.
+    """
+    usuario = users_db.get_public_by_id(id_persona)
+    if usuario is None:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado.")
     return usuario
