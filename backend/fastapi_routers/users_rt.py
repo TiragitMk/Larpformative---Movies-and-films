@@ -32,7 +32,7 @@ class LoginData(BaseModel):
     password: str = Field(min_length=1, max_length=128)
  
  
-@router.post("/register", status_code=status.HTTP_201_CREATED)
+@router.post("/register")
 def register(data: RegisterData):
     """
     Crea un usuario. Devuelve 409 (conflict) si el nombre ya existe.
@@ -58,7 +58,7 @@ def login(data: LoginData):
     return {"access_token": token, "token_type": "bearer"}
  
  
-@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/logout")
 def logout(token: str = Depends(get_token), tags=["protected"]):
     """
     Invalida el token actual. Si el token ya no era válido, no pasa nada.

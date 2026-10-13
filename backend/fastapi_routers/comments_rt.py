@@ -1,9 +1,9 @@
-from fastapi import APIRouter, HTTPException, status, Path, Query, Depends
-from pydantic import BaseModel, Field, ConfigDict
+from fastapi import APIRouter, HTTPException, Path, Query, Depends
+from pydantic import BaseModel, Field
 from backend.sql_model import comments as comments_db
 from backend.sql_model import users as users_db
 from backend.fastapi_routers.films_rt import IMDB_ID_PATTERN
-from backend.dependencies import get_current_user, get_token
+from backend.dependencies import get_current_user
  
 router = APIRouter(tags=["comments"])
  
@@ -11,8 +11,17 @@ class CommentData(BaseModel):
     """
     Recorta espacios antes de validar la longitud.
     """
-    model_config = ConfigDict(str_strip_whitespace=True)
     content: str = Field(min_length=1, max_length=400)
+
+def clean_content(content):
+    """
+    Quita los espacios del principio y del final del comentario.
+    Si después no queda texto (porque el comentario era solo espacios) responde 422.
+    """
+    texto = content.strip()
+    if not texto:
+        raise HTTPException(status_code=422, detail="El comentario no puede estar vacío.")
+    return texto
 
 @router.get("/comments")
 def latest_comments(
@@ -81,7 +90,7 @@ def user_comments(
 
 # Endpoints protegidos
 
-@router.post("/films/{imdb_id}/comments", status_code=status.HTTP_201_CREATED, tags=["protected"])
+@router.post("/films/{imdb_id}/comments", tags=["protected"])
 def post_comment(comment: CommentData,
                  imdb_id: str = Path(Pattern = IMDB_ID_PATTERN),
                  id_persona: int = Depends(get_current_user)):
@@ -116,7 +125,7 @@ def edit_comment(comment: CommentData,
     comments_db.edit_comment(comment_id, comment.content)
     return comments_db.get_comment(comment_id)
 
-@router.delete("/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["protected"])
+@router.delete("/comments/{comment_id}", tags=["protected"])
 def del_comment(comment_id: int = Path(ge=1),
                 id_persona: int = Depends(get_current_user)):
     """

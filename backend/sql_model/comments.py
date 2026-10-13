@@ -8,16 +8,6 @@ from backend.database import get_connection
 from backend.omdb_requests.omdb_requests_services import get_movie_api_data
 from backend.sql_model.films import is_film_in_db
 
-COLUMNAS_PUBLICAS = """
-    C.ID_COMENTARIO, C.ID_PELICULA, P.NOMBRE AS NOMBRE_PELICULA, P.ANIO,
-    C.ID_PERSONA, U.NOMBRE_USUARIO, C.COMENTARIO, C.FECHA_CREACION
-"""
-
-JOINS_PUBLICOS = """
-    FROM COMENTARIOS C
-    JOIN PERSONAS U ON U.ID_PERSONA = C.ID_PERSONA
-    JOIN PELICULAS P ON P.ID_PELICULA = C.ID_PELICULA
-"""
 
 def add_comment(id_pelicula, id_persona, comentario:str):
     """
@@ -101,7 +91,13 @@ def get_comment(id_comentario):
     Muestra los datos de un comentario específico.
     """
     with get_connection() as con:
-        cur = con.execute(f"SELECT {COLUMNAS_PUBLICAS} {JOINS_PUBLICOS} WHERE C.ID_COMENTARIO = ?", (id_comentario,))
+        cur = con.execute("""
+        SELECT C.ID_COMENTARIO, C.ID_PELICULA, P.NOMBRE AS NOMBRE_PELICULA, P.ANIO,
+            C.ID_PERSONA, U.NOMBRE_USUARIO, C.COMENTARIO, C.FECHA_CREACION 
+            FROM COMENTARIOS C
+            JOIN PERSONAS U ON U.ID_PERSONA = C.ID_PERSONA
+            JOIN PELICULAS P ON P.ID_PELICULA = C.ID_PELICULA WHERE C.ID_COMENTARIO = ?
+        """, (id_comentario,))
         row = cur.fetchone()
         return dict(row) if row else None
 
@@ -129,8 +125,12 @@ def get_all_my_comments_head(id_persona, limit=10, page=1):
     Los ordena por fecha de creación o en su defecto ID_COMENTARIO.
     """
     with get_connection() as con:
-        cur = con.execute(f"""
-        SELECT {COLUMNAS_PUBLICAS} {JOINS_PUBLICOS}
+        cur = con.execute("""
+        SELECT C.ID_COMENTARIO, C.ID_PELICULA, P.NOMBRE AS NOMBRE_PELICULA, P.ANIO,
+            C.ID_PERSONA, U.NOMBRE_USUARIO, C.COMENTARIO, C.FECHA_CREACION 
+            FROM COMENTARIOS C
+            JOIN PERSONAS U ON U.ID_PERSONA = C.ID_PERSONA
+            JOIN PELICULAS P ON P.ID_PELICULA = C.ID_PELICULA
             WHERE C.ID_PERSONA = ?
             ORDER BY C.FECHA_CREACION DESC, C.ID_COMENTARIO DESC
             LIMIT ? OFFSET ?
@@ -159,7 +159,11 @@ def get_all_comments_film_head(id_pelicula, limit=10, page=1):
     """
     with get_connection() as con:
         cur = con.execute(f"""
-        SELECT {COLUMNAS_PUBLICAS} {JOINS_PUBLICOS}
+        SELECT C.ID_COMENTARIO, C.ID_PELICULA, P.NOMBRE AS NOMBRE_PELICULA, P.ANIO,
+            C.ID_PERSONA, U.NOMBRE_USUARIO, C.COMENTARIO, C.FECHA_CREACION
+            FROM COMENTARIOS C
+            JOIN PERSONAS U ON U.ID_PERSONA = C.ID_PERSONA
+            JOIN PELICULAS P ON P.ID_PELICULA = C.ID_PELICULA
             WHERE C.ID_PELICULA = ?
             ORDER BY C.FECHA_CREACION DESC, C.ID_COMENTARIO DESC
             LIMIT ? OFFSET ?
@@ -172,7 +176,11 @@ def get_latest_comments_head(limit=10, page=1):
     """
     with get_connection() as con:
         cur = con.execute(f"""
-        SELECT {COLUMNAS_PUBLICAS} {JOINS_PUBLICOS}
+        SELECT C.ID_COMENTARIO, C.ID_PELICULA, P.NOMBRE AS NOMBRE_PELICULA, P.ANIO,
+            C.ID_PERSONA, U.NOMBRE_USUARIO, C.COMENTARIO, C.FECHA_CREACION
+            FROM COMENTARIOS C
+            JOIN PERSONAS U ON U.ID_PERSONA = C.ID_PERSONA
+            JOIN PELICULAS P ON P.ID_PELICULA = C.ID_PELICULA
             ORDER BY C.FECHA_CREACION DESC, C.ID_COMENTARIO DESC
             LIMIT ? OFFSET ?
         """, (limit, (page - 1) * limit))

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Path, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Path, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from backend.dependencies import get_current_user
 from backend.sql_model import ratings as ratings_db
@@ -69,7 +69,7 @@ def rate_film(data: RatingData,
     stats = ratings_db.get_average_rating(imdb_id)
     return {"imdb_id": imdb_id, "my_rating": data.rating, "average": stats["average"], "count": stats["count"]}
 
-@router.delete("/films/{imdb_id}/rating/me", status_code=status.HTTP_204_NO_CONTENT, tags=["protected"])
+@router.delete("/films/{imdb_id}/rating/me", tags=["protected"])
 def delete_my_rating(imdb_id: str = Path(pattern=IMDB_ID_PATTERN),
                      id_persona: int = Depends(get_current_user)):
     """
