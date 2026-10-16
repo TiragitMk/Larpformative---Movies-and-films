@@ -92,7 +92,7 @@ def user_comments(
 
 @router.post("/films/{imdb_id}/comments", tags=["protected"])
 def post_comment(comment: CommentData,
-                 imdb_id: str = Path(Pattern = IMDB_ID_PATTERN),
+                 imdb_id: str = Path(pattern = IMDB_ID_PATTERN),
                  id_persona: int = Depends(get_current_user)):
     """
     Postea un comentario en una película.

@@ -58,8 +58,8 @@ def login(data: LoginData):
     return {"access_token": token, "token_type": "bearer"}
  
  
-@router.post("/logout")
-def logout(token: str = Depends(get_token), tags=["protected"]):
+@router.post("/logout", tags=["protected"])
+def logout(token: str = Depends(get_token)):
     """
     Invalida el token actual. Si el token ya no era válido, no pasa nada.
     El frontend debe borrar además el token de localStorage.

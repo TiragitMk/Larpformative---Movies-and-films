@@ -43,6 +43,7 @@ def search_film_list(
     Busca en OMDB todas las películas cuyo título contenga el texto, 10 por página.
     Es la búsqueda pensada para el buscador de la web.
     Cada resultado trae imdb_ID, que el frontend usa para tener los detalles después.
+    OJO: La búsqueda no funciona si se añade el año, pues es un buscador sólo de título. BORRAR O NO USAR AÑO EN EL FRONTEND.
     """
     result = search_movies_api(title, year or "", page)
     if result is None:
