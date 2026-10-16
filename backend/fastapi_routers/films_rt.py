@@ -61,6 +61,8 @@ def list_films(
     """
     Lista las películas registradas en la db (las que tienen algún comentario o calificación).
     order se valida con Literal porque en sql_model se inserta con f-string. Así se evita inyección SQL.
+    PROBABLEMENTE NO SE USARÁ EN EL DISEÑO FINAL. Para usarla haría falta cierta escala (una db de películas
+    bastante llena de entradas) y no me merece la pena meterlo. Funciona, pero no está en el frontend.
     """
     if order_by == "rating":
         films = films_db.get_all_films_by_rating_head(order, limit, page)

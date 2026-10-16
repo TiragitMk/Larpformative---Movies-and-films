@@ -129,8 +129,7 @@ def edit_comment(comment: CommentData,
 def del_comment(comment_id: int = Path(ge=1),
                 id_persona: int = Depends(get_current_user)):
     """
-    Borra un comentario de un usuario autenticado,
-    devolviendo el status 204 que marca 'sin contenido'.
+    Borra un comentario de un usuario autenticado.
     """
     former_comment = comments_db.get_comment(comment_id)
 

@@ -76,6 +76,7 @@ def delete_my_rating(imdb_id: str = Path(pattern=IMDB_ID_PATTERN),
     Quita la calificación del usuario autenticado. 404 si no había calificado la película.
     No hace falta comprobar el dueño (403), porque la consulta borra solo
     la fila de este id_persona, sólo hay una combinación rating-usuario.
+    NO SE INCLUIRÁ EN EL DISEÑO FINAL DEL FRONTEND, al menos de momento.
     """
     if not ratings_db.del_rating(id_persona, imdb_id):
         raise HTTPException(status_code=404, detail="No has calificado esta película.")
