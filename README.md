@@ -94,10 +94,9 @@ La última página y segunda más compleja es user.html, la página del usuario.
 
 ## Estructura de ficheros
 
-## Estructura de ficheros
-
 ```
 .
+├── .gitignore
 ├── .env.example          Plantilla de las variables de entorno
 ├── .env                  Tus variables de entorno (lo creas tú, paso 10)
 ├── cine.db               Base de datos (se crea en el paso 6)
