@@ -39,6 +39,7 @@ coverage.xml
 .tox/
 .nox/
 .hypothesis/
+.bocetos/
 
 # Linters y type checkers
 .mypy_cache/
