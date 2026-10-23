@@ -1,6 +1,6 @@
-# Larpive: Aplicación web de cine
+# Larpive 1.0.0: Aplicación web de cine
 
-Larpive es una aplicación web de cine desarrollada como proyecto final de bootcamp. Permite buscar películas (con datos de la API de OMDb), ver su ficha, calificarlas de 1 a 5 estrellas y comentarlas. Los usuarios se registran, inician sesión y tienen un perfil público con sus calificaciones y comentarios.
+Larpive es una aplicación web de cine desarrollada como proyecto final del bootcamp CERO de Keepcoding. Permite buscar películas (con datos de la API de OMDb), ver su ficha, calificarlas de 1 a 5 estrellas y comentarlas. Los usuarios se registran, inician sesión y tienen un perfil público con sus calificaciones y comentarios.
  
 Autor: Daniel Cabrera - Repositorio: https://github.com/TiragitMk/Larpformative---Movies-and-films
 
