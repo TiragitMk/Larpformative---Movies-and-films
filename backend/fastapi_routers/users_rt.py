@@ -40,7 +40,7 @@ def register(data: RegisterData):
     """
     id_persona = security.register(data.username, data.password)
     if id_persona is None:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="El nombre de usuario ya existe.")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="This username already exists.")
     return {"id_persona": id_persona, "username": data.username}
  
  
@@ -53,7 +53,7 @@ def login(data: LoginData):
     """
     id_persona = security.login(data.username, data.password)
     if id_persona is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario o contraseña incorrectos.")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password.")
     token = security.create_session_token(id_persona)
     return {"access_token": token, "token_type": "bearer"}
  
@@ -78,7 +78,7 @@ def me(id_persona: int = Depends(get_current_user)):
     """
     usuario = users_db.get_public_by_id(id_persona)
     if usuario is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario no encontrado.")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found.")
     return usuario
 
 @router.get("/{id_persona}")
@@ -90,5 +90,5 @@ def user_profile(id_persona: int = Path(ge=1)):
     """
     usuario = users_db.get_public_by_id(id_persona)
     if usuario is None:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+        raise HTTPException(status_code=404, detail="User not found.")
     return usuario

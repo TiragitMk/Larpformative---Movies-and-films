@@ -65,7 +65,7 @@ def rate_film(data: RatingData,
     de la clase heredada de BaseModel, que llama al campo concreto del JSON.
     """
     if ratings_db.add_rating(imdb_id, id_persona, data.rating) is None:
-        raise HTTPException(status_code=404, detail="Película no encontrada.")
+        raise HTTPException(status_code=404, detail="Movie not found.")
     stats = ratings_db.get_average_rating(imdb_id)
     return {"imdb_id": imdb_id, "my_rating": data.rating, "average": stats["average"], "count": stats["count"]}
 
@@ -79,4 +79,4 @@ def delete_my_rating(imdb_id: str = Path(pattern=IMDB_ID_PATTERN),
     NO SE INCLUIRÁ EN EL DISEÑO FINAL DEL FRONTEND, al menos de momento.
     """
     if not ratings_db.del_rating(id_persona, imdb_id):
-        raise HTTPException(status_code=404, detail="No has calificado esta película.")
+        raise HTTPException(status_code=404, detail="You haven't rated this film.")

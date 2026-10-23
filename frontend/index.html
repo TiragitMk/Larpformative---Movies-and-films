@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cine</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+</head>
+<body>
+ 
+  <!-- Navbar: nav.js decide qué enlaces se muestran (atributo hidden). Conservar los id. -->
+  <nav class="navbar bg-body-tertiary">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">Larpive</a>
+      <div class="d-flex gap-2">
+        <a id="nav-login" class="btn btn-primary" href="login.html" hidden>Login or Register</a>
+        <a id="nav-profile" class="btn btn-outline-primary" href="user.html" hidden>Profile</a>
+        <button id="nav-logout" class="btn btn-outline-danger" type="button" hidden>Logoff</button>
+      </div>
+    </div>
+  </nav>
+ 
+  <main>
+    <!-- Búsqueda de lista. No necesita JS, el form envía ?title=... a search.html. -->
+    <div class="mb-5">
+      <h1>Find movies</h1>
+      <form action="search.html" method="get" class="d-flex gap-2">
+        <div class="form-floating flex-grow-1">
+          <input type="text" class="form-control form-control-lg" id="list-title" name="title" placeholder="Title" required>
+          <label for="list-title">Title</label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg">Search</button>
+      </form>
+    </div>
+ 
+    <!-- Búsqueda directa a film.html. index.js activa/desactiva los campos según el radio. -->
+    <div class="mb-5">
+      <h2>Or go straight to its page</h2>
+      <form id="direct-form">
+ 
+        <div class="row g-2 align-items-center mb-2">
+          <div class="col-auto">
+            <input class="form-check-input" type="radio" name="mode" id="mode-id" value="id" checked>
+            <label class="form-check-label" for="mode-id">By IMDb ID</label>
+          </div>
+          <div class="col">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="direct-id" placeholder="IMDb ID" pattern="tt\d{7,8}" required>
+              <label for="direct-id">IMDb ID (tt0133093)</label>
+            </div>
+          </div>
+        </div>
+ 
+        <div class="row g-2 align-items-center mb-2">
+          <div class="col-auto">
+            <input class="form-check-input" type="radio" name="mode" id="mode-title" value="title">
+            <label class="form-check-label" for="mode-title">By title</label>
+          </div>
+          <div class="col">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="direct-title" placeholder="Title" required disabled>
+              <label for="direct-title">Title</label>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="form-floating">
+              <input type="number" class="form-control" id="direct-year" placeholder="Year" min="1880" max="2100" disabled>
+              <label for="direct-year">Year</label>
+            </div>
+          </div>
+        </div>
+ 
+        <button type="submit" class="btn btn-secondary">Go</button>
+        <div id="direct-error" class="text-danger mt-2"></div>
+      </form>
+    </div>
+ 
+    <!-- Últimos comentarios de la web. index.js rellena el div. Sencillito. -->
+    <div class="mb-5">
+      <h2>Latest comments</h2>
+      <div id="latest-comments" class="list-group"></div>
+    </div>
+  </main>
+ 
+  <!-- Los scripts van al final del body para que el HTML ya exista cuando se ejecuten. El orden importa. -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+  <script src="js/api.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/index.js"></script>
+</body>
+</html>

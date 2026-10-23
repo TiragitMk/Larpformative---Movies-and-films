@@ -20,7 +20,7 @@ def clean_content(content):
     """
     texto = content.strip()
     if not texto:
-        raise HTTPException(status_code=422, detail="El comentario no puede estar vacío.")
+        raise HTTPException(status_code=422, detail="Comment must not be empty.")
     return texto
 
 @router.get("/comments")
@@ -65,7 +65,7 @@ def comment_detail(id_comentario: int = Path(ge=1)):
     """
     comment = comments_db.get_comment(id_comentario)
     if comment is None:
-        raise HTTPException(status_code=404, detail="Comentario no encontrado.")
+        raise HTTPException(status_code=404, detail="Comment not found.")
     return comment
 
 @router.get("/users/{id_persona}/comments")
@@ -80,7 +80,7 @@ def user_comments(
     (el frontend obtiene su propio id con GET /users/me).
     """
     if users_db.get_public_by_id(id_persona) is None:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+        raise HTTPException(status_code=404, detail="User not found.")
     return {
         "total": comments_db.get_my_comment_count(id_persona),
         "page": page,
@@ -102,7 +102,7 @@ def post_comment(comment: CommentData,
     """
     comment_id = comments_db.add_comment(imdb_id, id_persona, comment.content)
     if comment_id is None:
-        raise HTTPException(status_code=404, detail="Película no encontrada.")
+        raise HTTPException(status_code=404, detail="Movie not found.")
     return comments_db.get_comment(comment_id)
 
 @router.put("/comments/{comment_id}", tags=["protected"])
@@ -118,9 +118,9 @@ def edit_comment(comment: CommentData,
     former_comment = comments_db.get_comment(comment_id)
 
     if former_comment is None:
-        raise HTTPException(status_code=404, detail="Comentario no encontrado.")
+        raise HTTPException(status_code=404, detail="Comment not found.")
     if former_comment["ID_PERSONA"] != id_persona:
-        raise HTTPException(status_code=403, detail="No puedes editar el comentario de otra persona.")
+        raise HTTPException(status_code=403, detail="You can't edit another user's comments.")
 
     comments_db.edit_comment(comment_id, comment.content)
     return comments_db.get_comment(comment_id)
@@ -134,8 +134,8 @@ def del_comment(comment_id: int = Path(ge=1),
     former_comment = comments_db.get_comment(comment_id)
 
     if former_comment is None:
-        raise HTTPException(status_code=404, detail="Comentario no encontrado.")
+        raise HTTPException(status_code=404, detail="Comment not found")
     if former_comment["ID_PERSONA"] != id_persona:
-        raise HTTPException(status_code=403, detail="No puedes borrar el comentario de otra persona.")
+        raise HTTPException(status_code=403, detail="You can't delete another user's comments.")
 
     comments_db.del_comment(comment_id)

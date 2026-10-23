@@ -22,7 +22,7 @@ def search_film(
     Usa Query para afinar con reglas de validación los parámetros de los endpoints.
     """
     if not imdb_id and not title:
-        raise HTTPException(status_code=400, detail="Indica imdb_id o title.")
+        raise HTTPException(status_code=400, detail="Submit imdb_id or title.")
  
     if imdb_id:
         data = get_movie_api_data(movie_id=imdb_id)
@@ -30,7 +30,7 @@ def search_film(
         data = get_movie_api_data(movie_title=title, movie_year=year or "")
  
     if data is None:
-        raise HTTPException(status_code=404, detail="Película no encontrada.")
+        raise HTTPException(status_code=404, detail="Movie not found.")
     return data
 
 @router.get("/search/list")
@@ -47,7 +47,7 @@ def search_film_list(
     """
     result = search_movies_api(title, year or "", page)
     if result is None:
-        raise HTTPException(status_code=404, detail="No se encontraron películas.")
+        raise HTTPException(status_code=404, detail="Couldn't find any movies.")
     return {"total": result["total"], "page": page, "limit": 10, "items": result["items"]}
  
  
@@ -80,7 +80,7 @@ def film_detail(imdb_id: str = Path(pattern=IMDB_ID_PATTERN)):
     """
     data = get_movie_api_data(movie_id=imdb_id)
     if data is None:
-        raise HTTPException(status_code=404, detail="Película no encontrada.")
+        raise HTTPException(status_code=404, detail="Movie not found.")
  
     return {
         "film": data,
