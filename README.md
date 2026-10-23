@@ -16,8 +16,11 @@ Autor: Daniel Cabrera - Repositorio: https://github.com/TiragitMk/Larpformative-
 * **VSCode con la extensión "Live Server"** de Ritwick Dey, para servir el frontend.
 * Una **clave de la API de OMDb** (gratuita, ver paso 8 de la instalación).
 * **Conexión a internet**, ya que Bootstrap se carga por CDN y los datos de las películas vienen de OMDb.
+* Instalación testeada en Ubuntu y Windows 10. Debería funcionar en Windows 11, pero no lo puedo comprobar yo manualmente al no contar con un ordenador o máquina virtual de Windows 11.
 
 ## Instalación y apertura del servidor.
+
+**OJO**: Si se menciona ejecutar algo con `py` o `python`, dependiendo de tu sistema operativo e instalación de Python puede que tengas que usar `py`, `python` o `python3`. Lo normal es que `py` funcione en Windows y `python3` en Linux, pero si no funciona ten en cuenta que hay varias alternativas y puedes probar.
 
 Para instalar el programa y poder usarlo en un servidor FastAPI se deberá hacer lo siguiente, en orden:
 
@@ -25,18 +28,26 @@ Para instalar el programa y poder usarlo en un servidor FastAPI se deberá hacer
 2. Una vez instalado el repositorio, desde la raíz del proyecto abre una terminal:
 * * Windows 10/11: En la raíz del proyecto, en el explorador de archivos haz doble clic en la ruta (la barra de la dirección de la carpeta) y sustituye el texto por `cmd`.
 * * Linux: En la raíz del proyecto, pulsa el botón derecho del ratón y abre Bash en esa dirección.
-3. Desde la terminal, escribe `python -m venv .venv` para crear un entorno virtual. Puede que tengas que usar `python3` o `py` en lugar de `python` (también en el resto de comandos).
-4. Desde la terminal, activa el entorno virtual con `.venv\Scripts\activate` en Windows, o `source .venv/bin/activate`. Sabrás que está activado porque hay un (.venv) antes de la ruta en la terminal. A partir de ahora, TODAS las instrucciones que se mencionen se deberán ejecutar con el entorno virtual activado, así que asegúrate de que está activado correctamente. Para desactivarlo, se escribe `deactivate`, y para reactivarlo se vuelve a ejecutar alguno de los comandos de antes.
+3. Desde la terminal, escribe `python -m venv .venv` para crear un entorno virtual. Puede que tengas que usar `python3` o `py` en lugar de `python` (también en el resto de comandos). En Debian/Ubuntu puede que recibas un error del tipo "you need to install the python3-venv package" y tengas que instalar python-venv para tu versión. La terminal te dará las instrucciones para hacerlo. Con uv todo sería bastante sencillo, pero el proyecto requiere usar pip.
+4. Desde la terminal, activa el entorno virtual con `.venv\Scripts\activate` en Windows, o `source .venv/bin/activate` en Linux. Sabrás que está activado porque hay un (.venv) antes de la ruta en la terminal. A partir de ahora, TODAS las instrucciones que se mencionen se deberán ejecutar con el entorno virtual activado, así que asegúrate de que está activado correctamente. Para desactivarlo, se escribe `deactivate`, y para reactivarlo se vuelve a ejecutar alguno de los comandos de antes.
 * * Si PowerShell bloquea el script de activación y/o lo estás ejecutando desde una terminal de VSCode, ejecuta `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`. Si estás en VSCode, cierra VSCode y ábrelo de nuevo con permisos de administrador después de ejecutar dicho comando.
 5. Desde la terminal, escribe `python -m pip install -r requirements.txt`.
 6. Desde la terminal, desde la raíz del proyecto, ejecuta `py -m backend.database`. Se creará automáticamente un nuevo archivo `cine.db` en la raíz del proyecto, que no sobreescribe cine.db si ya existe. No pasa nada si se ejecuta más de una vez por error. El cine.db creado es una base de datos sqlite3 con las tablas vacías.
 7. Busca el archivo `.env.example` y cópialo o duplícalo. Ábrelo con algún editor de texto y verás 2 variables. En ambas variables, sustituye sus contenidos por los tuyos. La ruta por defecto de cine.db es `cine.db`, porque se crea automáticamente en la raíz del proyecto. Recomiendo dejarla así si no buscas modificar algo de código y quieres evitar errores.
 8. Regístrate en la web de la api de omdb https://www.omdbapi.com/apikey.aspx. Dale a la opción "FREE!" si quieres obtener una clave gratuita, o Patreon si quieres una de pago. Regístrate y obtendrás tu clave en tu correo electrónico.
 9. En el archivo copiado de .env.example, en el enlace de la variable API_URL, sustituye el texto `APIKEY` por tu propia clave, procurando conservar el resto de la ruta, incluyendo el & de después de la clave.
-10. Una vez hayas terminado, cambia el nombre de esta copia modificada a `.env`.
-11. Para arrancar el servidor local de la API, desde la raíz del proyecto y en el terminal, ejecuta `fastapi run backend/main.py`.
+10. Una vez hayas terminado, cambia el nombre de esta copia modificada a `.env`. Si lo deseas, puedes eliminar .env.example original, su única utilidad es de template para que tú lo sobreescribas y guardes como .env, que es el archivo realmente necesario.
+11. Para arrancar el servidor local de la API, desde la raíz del proyecto y en el terminal, ejecuta `fastapi run backend/main.py` o `fastapi dev backend/main.py`.
 12. Para usar el frontend, como FastAPI tiene el CORS habilitado para el puerto 5500, es interesante descargar la extensión "Live Server" de VSCode, de Ritwick Dey (tiene más de 83 millones de descargas). Esta extensión añadirá un botón en VSCode en la esquina inferior derecha que dirá "Go Live". Al pulsar este botón, si tienes VSCode con la carpeta de la raíz del proyecto abierta, abrirá un servidor en el puerto 5500 del localhost (127.0.0.1:5500), que es justamente el que tenemos habilitado en el CORS. Desde este servidor, y con la api iniciada en el 8000, puedes usar la web en su máximo esplendor, con todas las funcionalidades del programa disponibles y las conexiones hechas.
 Una vez tengas abierto el servidor, se te abrirá una pestaña en tu navegador principal y saldrán las carpetas del repositorio. Debes clicar "frontend" y debería redirigir automáticamente a index.html, que es el home de la web. Si quieres ir directamente al home, también puedes escribir en la url del navegador "http://127.0.0.1:5500/frontend/".
+
+**Para cerrar los servidores:** 
+1. Pulsa a la vez las teclas `ctrl+c` en la terminal donde se está ejecutando Fastapi. Esto cerrará el servidor de la api.
+2. En VSCode, donde pulsaste "Go Live", si el servidor sigue abierto te saldrá "Port: 5500". Si haces click, cerrarás el servidor del frontend.
+
+Cerrando ambos servidores apagas el front y la api. Para volver a abrir, simplemente vuelves a ejecutar `fastapi run backend/main.py` o `fastapi dev backend/main.py` y le vuelves a dar a "Go Live" en VSCode, abriendo ambos servidores. Los datos persisten en la base de datos, y no hará falta ninguna instalación más.
+
+*OJO*: Ten en cuenta que esto está pensado para testear en local, y el Go Live sirve para testear, y no para producción. Para eso haría falta comprar un nombre de dominio e instalar en un servidor y todo eso. Tampoco tendría sentido guardar todo el código en un repositorio público de GitHub, pero hago ese matiz.
 
 Errores típicos:
 * **ModuleNotFoundError**: Comprueba que tienes activado el entorno virtual. También puede ser que estés ejecutando comandos desde fuera de la raíz del proyecto, o que no estés usando -m.
@@ -219,3 +230,4 @@ Las sesiones caducan a los 7 días, a partir de ahí el token deja de ser válid
 * Algunos endpoints como `GET /films` (ranking de películas registradas) y el borrado de calificaciones existen en la API, pero no se usan en el frontend. Se pueden implementar en el futuro si se desea. Lo contrario ocurre con las funcionalidades de modificar los datos de un usuario (nombre o contraseña) o el borrado de cuentas. Se pueden implementar en el futuro, sin demasiada complejidad.
 * El token se guarda en localStorage. Es sencillo, pero un ataque XSS podría leerlo; por eso es importante insertar siempre el texto de los usuarios con `textContent`.
 * La instalación manual es bastante engorrosa. Se podría hacer un instalador que reciba API_KEY e instalar automáticamente el servidor.
+* Los requisitos del proyecto requieren usar pip. Con uv, la instalación es mucho más sencilla, más rápida, más portable y el desarrollo es más fácil.
